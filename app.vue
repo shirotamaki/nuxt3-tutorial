@@ -1,13 +1,43 @@
 <template>
+  <NuxtLayout>
   <div>
-    <p>{{ counter }}</p>
-    <button @click="counterStore.countUp">+</button>
-    <button @click="counterStore.countDown">-</button>
-    <button @click="counterStore.Reset">Reset</button>
+    <h1>To Do</h1>
+    <form @submit.prevent="addTask">
+      <input v-model="newTask" name="newTask" autocomplete="off" />
+      <button>Add</button>
+    </form>
+    <ul>
+      <li v-for="(task, index) in tasks" :key="task">
+        <span>{{ task }}</span>
+        <button @click="deleteTask(index)">Delete</button>
+      </li>
+    </ul>
+    <button @click="clearTask">Clear</button>
   </div>
+</NuxtLayout>
 </template>
 
 <script setup>
-const counterStore = useCounterState()
-const { counter } = counterStore
+const tasks = useCookie(
+  'tasks',
+  {
+    default: () => []
+  }
+)
+const newTask = ref('')
+function addTask() {
+  if (newTask.value.length >= 1) {
+    tasks.value.push(newTask.value)
+  }
+  newTask.value = ''
+}
+
+function deleteTask(index) {
+  tasks.value.splice(index, 1)
+}
+
+function clearTask() {
+  tasks.value = []
+}
+
 </script>
